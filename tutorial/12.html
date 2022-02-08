@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+    <style>
+      .italic {
+        font-style: italic;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <script>
+      function app({ node, state, view }) {
+        const args = view(state);
+        const [tagName, ...rest] = args;
+        const el = document.createElement(tagName);
+
+        let attr, child;
+        if (rest.length === 1 && rest[0] && rest[0].constructor !== Object) {
+          [child] = rest;
+        } else {
+          [attr, child] = rest;
+        }
+
+        if (typeof child === "string") {
+          const text = document.createTextNode(child);
+          el.appendChild(text);
+        } else if (Array.isArray(child)) {
+          child.forEach((child) => app({ node: el, state, view: () => child }));
+        }
+
+        Object.entries(attr || []).forEach(([key, value]) => {
+          el.setAttribute(key, value);
+          el[key] = value;
+        });
+
+        node.appendChild(el);
+      }
+
+      const node = document.getElementById("app");
+
+      const state = {
+        title: "Hello World!",
+        subtitle: "I like to click stuff.",
+        count: 0,
+      };
+
+      const Headings = (state) => [
+        ["h1", state.title],
+        ["h2", { class: "italic" }, state.subtitle],
+      ];
+
+      const Counter = (state) => [
+        ["p", `You clicked ${state.count} times`],
+        [
+          "button",
+          {
+            onclick: () => {
+              state.count += 1;
+            },
+          },
+          "Click me",
+        ],
+      ];
+
+      app({
+        node,
+        state,
+        view: (state) => ["div", [...Headings(state), ...Counter(state)]],
+      });
+
+      window.addEventListener("click", (event) => {
+        node.innerHTML = "";
+        app({
+          node,
+          state,
+          view: (state) => ["div", [...Headings(state), ...Counter(state)]],
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <title>Micro Framework</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+  </head>
+
+  <body>
+    <div id="app" />
+
+    <script>
+      function initApp({ node, state, view }) {
+        function app({ node, view }) {
+          let el, attr, children;
+          const args = view(state);
+
+          // Manage args
+          if (!Array.isArray(args)) {
+            return node.appendChild(document.createTextNode(args));
+          } else if (Array.isArray(args[0])) {
+            return args.forEach((child) => app({ node: node, view: () => child }));
+          }
+
+          const [tagName, ...rest] = args;
+          if (rest.length === 1 && rest[0] && rest[0].constructor !== Object) {
+            [children] = rest;
+          } else {
+            [attr, children] = rest;
+          }
+          el = document.createElement(tagName);
+
+          // Manage children
+          if (typeof children === "string" || typeof children === "number") {
+            const text = document.createTextNode(children);
+            el.appendChild(text);
+          } else if (Array.isArray(children) && Array.isArray(children[0])) {
+            children.forEach((child) => app({ node: el, view: () => child }));
+          } else if (children) {
+            app({ node: el, view: () => children });
+          }
+
+          Object.entries(attr || []).forEach(([key, value]) => {
+            el.setAttribute(key, value);
+            el[key] = value;
+          });
+          node.appendChild(el);
+        }
+
+        app({ node, view });
+        ["onclick"].forEach((key) => {
+          window.addEventListener(key.slice(2), (event) => {
+            node.innerHTML = "";
+            app({ node, view });
+          });
+        });
+      }
+
+      const div = (...args) => ["div", ...args];
+      const br = (...args) => ["br", ...args];
+      const hr = (...args) => ["hr", ...args];
+      const h1 = (...args) => ["h1", ...args];
+      const h2 = (...args) => ["h2", ...args];
+      const h3 = (...args) => ["h3", ...args];
+      const p = (...args) => ["p", ...args];
+      const img = (...args) => ["img", ...args];
+      const ul = (...args) => ["ul", ...args];
+      const li = (...args) => ["li", ...args];
+      const pre = (...args) => ["pre", ...args];
+      const code = (...args) => ["code", ...args];
+      const form = (...args) => ["form", ...args];
+      const input = (...args) => ["input", ...args];
+      const button = (...args) => ["button", ...args];
+      const textarea = (...args) => ["textarea", ...args];
+      const label = (...args) => ["label", ...args];
+
+      const Intro = (state) => [h1(state.introTitle), p(state.introShort), p(state.introLong)];
+
+      const ToggleOption = (state, option) => {
+        state.options[option] = !state.options[option];
+      };
+
+      const Installation = (state) => [
+        h2("Installation"),
+        div({ id: "installation" }, [
+          pre(code(state.installationCode)),
+          h3("Options"),
+          form([
+            input({
+              type: "radio",
+              id: "option-1",
+              value: "Option 1",
+              checked: state.options[0],
+              onclick: () => ToggleOption(state, 0),
+            }),
+            label({ for: "option-1", onclick: () => ToggleOption(state, 0) }, "Option 1"),
+            input({
+              type: "radio",
+              id: "option-2",
+              value: "Option 2",
+              checked: state.options[1],
+              onclick: () => ToggleOption(state, 1),
+            }),
+            label({ for: "option-2", onclick: () => ToggleOption(state, 1) }, "Option 2"),
+            input({
+              type: "radio",
+              id: "option-3",
+              value: "Option 3",
+              checked: state.options[2],
+              onclick: () => ToggleOption(state, 2),
+            }),
+            label({ for: "option-3", onclick: () => ToggleOption(state, 2) }, "Option 3"),
+          ]),
+        ]),
+      ];
+
+      const Goals = (state) => [h2({ id: "goals" }, "Goals"), ul(state.goals.map((goal) => li(goal)))];
+
+      const Elements = (state) => [
+        h2({ id: "element" }, "Element demos"),
+        p("This is supposed to be a demo page so we need more elements!"),
+        h3({ id: "form-elements" }, "Form elements"),
+        form([
+          label({ for: "email" }, "Email"),
+          input({ type: "email", name: "email", id: "email", placeholder: "john.doe@gmail.com" }),
+          label({ for: "id" }, "User id (read only)"),
+          input({ readonly: "", name: "id", id: "id", value: "04D6H89Z" }),
+          label({ for: "disabled" }, "Random disabled input"),
+          input({ disabled: "", name: "disabled", id: "disabled", placeholder: "Because why not?" }),
+          label({ for: "about" }, "About me"),
+          textarea({ name: "about", id: "about", placeholder: "I am a textarea..." }),
+          label("Choose a Doe:"),
+          div([
+            input({ type: "radio", id: "john", name: "drone", value: "john", checked: "" }),
+            label({ for: "john" }, "John Doe"),
+          ]),
+          div([
+            input({ type: "radio", id: "jane", name: "drone", value: "jane", checked: "" }),
+            label({ for: "jane" }, "Jane Doe"),
+          ]),
+          div([
+            input({ type: "radio", id: "johnny", name: "drone", value: "johnny", checked: "" }),
+            label({ for: "johnny" }, "Johnny Doe"),
+          ]),
+          br(),
+          input({ type: "checkbox", name: "remember", id: "remember", checked: "" }),
+          label({ for: "remember" }, "Remember me"),
+          input({ type: "submit", value: "Submit" }),
+          input({ type: "reset", value: "Reset" }),
+        ]),
+      ];
+
+      const Cat = (state) => [
+        h3({ id: "cat" }, "Cat"),
+        p("Here is a cute kitten."),
+        img({ src: "https://placekitten.com/408/287", alt: "Example kitten" }),
+        hr(),
+      ];
+
+      const Counter = (state) =>
+        div([
+          p(`You clicked ${state.count} times`),
+          button(
+            {
+              onclick: () => {
+                state.count += 1;
+              },
+            },
+            "Click me"
+          ),
+        ]);
+
+      initApp({
+        node: document.getElementById("app"),
+        state: {
+          introTitle: "Water.css",
+          introShort: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eius, reprehenderit!",
+          introLong:
+            "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rem consequatur, natus laboriosam incidunt quam est aperiam dignissimos doloribus beatae id, aspernatur facilis? Molestiae eveniet nihil sint nam, animi commodi debitis!",
+          installationCode: "console.log('Hello World!');",
+          goals: [
+            "Responsive",
+            "Good code quality",
+            "Good browser support",
+            "Small size (&lt; 2kb)",
+            "Beautiful",
+            "No classes",
+          ],
+          count: 0,
+          options: {
+            0: false,
+            1: false,
+            2: true,
+          },
+        },
+        view: (state) => [Intro(state), Installation(state), Counter(state), Goals(state), Cat(state), Elements(state)],
+      });
+    </script>
+  </body>
+</html>

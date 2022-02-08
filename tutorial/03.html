@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <script>
+      const node = document.getElementById("app");
+      const el = document.createElement("h1");
+      const text = document.createTextNode("Hello World!");
+      el.appendChild(text);
+      node.appendChild(el);
+    </script>
+  </body>
+</html>

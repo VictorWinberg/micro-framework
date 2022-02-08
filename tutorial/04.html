@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <script>
+      function app({ node, args }) {
+        const [tagName, child] = args;
+        const el = document.createElement(tagName);
+
+        const text = document.createTextNode(child);
+        el.appendChild(text);
+
+        node.appendChild(el);
+      }
+
+      const node = document.getElementById("app");
+      app({ node, args: ["h1", "Hello World!"] });
+    </script>
+  </body>
+</html>

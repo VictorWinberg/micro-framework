@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <script>
+      function initApp({ node, state, view }) {
+        function app({ node, view }) {
+          const args = view(state);
+          const [tagName, ...rest] = args;
+          const el = document.createElement(tagName);
+
+          let attr, child;
+          if (rest.length === 1 && rest[0] && rest[0].constructor !== Object) {
+            [child] = rest;
+          } else {
+            [attr, child] = rest;
+          }
+
+          if (typeof child === "string") {
+            const text = document.createTextNode(child);
+            el.appendChild(text);
+          } else if (Array.isArray(child)) {
+            child.forEach((child) => app({ node: el, state, view: () => child }));
+          }
+
+          Object.entries(attr || []).forEach(([key, value]) => {
+            el.setAttribute(key, value);
+            el[key] = value;
+          });
+
+          node.appendChild(el);
+        }
+
+        app({ node, view });
+
+        window.addEventListener("click", (event) => {
+          node.innerHTML = "";
+          app({ node, view });
+        });
+      }
+
+      const div = (...args) => ["div", ...args];
+      const p = (...args) => ["p", ...args];
+      const button = (...args) => ["button", ...args];
+
+      const IncCount = (state) => {
+        state.count += 1;
+      };
+
+      initApp({
+        state: { count: 0 },
+        view: (state) =>
+          div([
+            p(`You clicked ${state.count} times`),
+            button({ onclick: () => IncCount(state) }, "Click me")
+          ]),
+        node: document.getElementById("app"),
+      });
+    </script>
+  </body>
+</html>
