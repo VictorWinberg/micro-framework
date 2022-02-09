@@ -46,25 +46,25 @@
         subtitle: "I like to click stuff.",
       };
 
+      const Headings = (state) => [
+        ["h1", state.title],
+        ["h2", { class: "italic" }, state.subtitle],
+      ];
+
+      const Clicker = (state) => [
+        "button",
+        {
+          onclick: () => {
+            alert("You are amazing at clicking stuff!");
+          },
+        },
+        "Click me",
+      ];
+
       app({
         node,
         state,
-        view: (state) => [
-          "div",
-          [
-            ["h1", state.title],
-            ["h2", { class: "italic" }, state.subtitle],
-            [
-              "button",
-              {
-                onclick: () => {
-                  alert("You are amazing at clicking stuff!");
-                },
-              },
-              "Click me",
-            ],
-          ],
-        ],
+        view: (state) => ["div", [...Headings(state), Clicker(state)]],
       });
     </script>
   </body>
