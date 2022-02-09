@@ -11,14 +11,27 @@
         const [tagName, child] = args;
         const el = document.createElement(tagName);
 
-        const text = document.createTextNode(child);
-        el.appendChild(text);
+        if (typeof child === "string") {
+          const text = document.createTextNode(child);
+          el.appendChild(text);
+        } else if (Array.isArray(child)) {
+          child.forEach((child) => app({ node: el, args: child }));
+        }
 
         node.appendChild(el);
       }
 
       const node = document.getElementById("app");
-      app({ node, args: ["h1", "Hello World!"] });
+      app({
+        node,
+        args: [
+          "div",
+          [
+            ["h1", "Hello World!"],
+            ["h2", "I like cute cats."],
+          ],
+        ],
+      });
     </script>
   </body>
 </html>
