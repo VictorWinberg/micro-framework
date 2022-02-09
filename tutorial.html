@@ -1,6 +1,11 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+    <style>
+      .italic {
+        font-style: italic;
+      }
+    </style>
   </head>
 
   <body>
@@ -8,8 +13,10 @@
 
     <script>
       function app({ node, args }) {
-        const [tagName, child] = args;
+        const [tagName, ...rest] = args;
         const el = document.createElement(tagName);
+
+        const [attr, child] = rest;
 
         if (typeof child === "string") {
           const text = document.createTextNode(child);
@@ -17,6 +24,11 @@
         } else if (Array.isArray(child)) {
           child.forEach((child) => app({ node: el, args: child }));
         }
+
+        Object.entries(attr || []).forEach(([key, value]) => {
+          el.setAttribute(key, value);
+          el[key] = value;
+        });
 
         node.appendChild(el);
       }
@@ -26,9 +38,11 @@
         node,
         args: [
           "div",
+          {},
           [
-            ["h1", "Hello World!"],
-            ["h2", "I like cute cats."],
+            ["h1", {}, "Hello World!"],
+            ["h2", { class: "italic" }, "I like cute cats."],
+            ["img", { src: "https://placekitten.com/408/287", alt: "Cute kitten", border: "3px solid" }],
           ],
         ],
       });
