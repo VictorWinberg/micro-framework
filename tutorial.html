@@ -1,18 +1,14 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
-    <style>
-      .italic {
-        font-style: italic;
-      }
-    </style>
   </head>
 
   <body>
     <div id="app"></div>
 
     <script>
-      function app({ node, state, view }) {
+    function initApp({ node, state, view }) {
+      function app({ node, view }) {
         const args = view(state);
         const [tagName, ...rest] = args;
         const el = document.createElement(tagName);
@@ -39,45 +35,28 @@
         node.appendChild(el);
       }
 
-      const node = document.getElementById("app");
-
-      const state = {
-        title: "Hello World!",
-        subtitle: "I like to click stuff.",
-        count: 0,
-      };
-
-      const Headings = (state) => [
-        ["h1", state.title],
-        ["h2", { class: "italic" }, state.subtitle],
-      ];
-
-      const Counter = (state) => [
-        ["p", `You clicked ${state.count} times`],
-        [
-          "button",
-          {
-            onclick: () => {
-              state.count += 1;
-            },
-          },
-          "Click me",
-        ],
-      ];
-
-      app({
-        node,
-        state,
-        view: (state) => ["div", [...Headings(state), ...Counter(state)]],
-      });
+      app({ node, view });
 
       window.addEventListener("click", (event) => {
         node.innerHTML = "";
-        app({
-          node,
-          state,
-          view: (state) => ["div", [...Headings(state), ...Counter(state)]],
-        });
+        app({ node, view });
+      });
+    }
+
+      const IncCount = (state) => {
+        state.count += 1;
+      };
+
+      initApp({
+        state: { count: 0 },
+        view: (state) => [
+          "div",
+          [
+            ["p", `You clicked ${state.count} times`],
+            ["button", { onclick: () => IncCount(state) }, "Click me"],
+          ],
+        ],
+        node: document.getElementById("app"),
       });
     </script>
   </body>
