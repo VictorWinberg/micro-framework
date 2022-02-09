@@ -43,19 +43,21 @@
       });
     }
 
+      const div = (...args) => ["div", ...args];
+      const p = (...args) => ["p", ...args];
+      const button = (...args) => ["button", ...args];
+
       const IncCount = (state) => {
         state.count += 1;
       };
 
       initApp({
         state: { count: 0 },
-        view: (state) => [
-          "div",
-          [
-            ["p", `You clicked ${state.count} times`],
-            ["button", { onclick: () => IncCount(state) }, "Click me"],
-          ],
-        ],
+        view: (state) =>
+          div([
+            p(`You clicked ${state.count} times`),
+            button({ onclick: () => IncCount(state) }, "Click me")
+          ]),
         node: document.getElementById("app"),
       });
     </script>
