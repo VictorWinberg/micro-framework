@@ -44,6 +44,7 @@
       const state = {
         title: "Hello World!",
         subtitle: "I like to click stuff.",
+        count: 0,
       };
 
       const Headings = (state) => [
@@ -51,20 +52,24 @@
         ["h2", { class: "italic" }, state.subtitle],
       ];
 
-      const Clicker = (state) => [
-        "button",
-        {
-          onclick: () => {
-            alert("You are amazing at clicking stuff!");
+      const Counter = (state) => [
+        ["p", `You clicked ${state.count} times`],
+        [
+          "button",
+          {
+            onclick: () => {
+              state.count += 1;
+              console.log(state);
+            },
           },
-        },
-        "Click me",
+          "Click me",
+        ],
       ];
 
       app({
         node,
         state,
-        view: (state) => ["div", [...Headings(state), Clicker(state)]],
+        view: (state) => ["div", [...Headings(state), ...Counter(state)]],
       });
     </script>
   </body>
