@@ -43,9 +43,7 @@
 
       const state = {
         title: "Hello World!",
-        subtitle: "I like cute cats.",
-        catUrl: "https://placekitten.com/408/287",
-        catAlt: "Cute kitten",
+        subtitle: "I like to click stuff.",
       };
 
       app({
@@ -56,7 +54,15 @@
           [
             ["h1", state.title],
             ["h2", { class: "italic" }, state.subtitle],
-            ["img", { src: state.catUrl, alt: state.catAlt, border: "3px solid" }],
+            [
+              "button",
+              {
+                onclick: () => {
+                  alert("You are amazing at clicking stuff!");
+                },
+              },
+              "Click me",
+            ],
           ],
         ],
       });
