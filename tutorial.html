@@ -12,7 +12,8 @@
     <div id="app"></div>
 
     <script>
-      function app({ node, args }) {
+      function app({ node, state, view }) {
+        const args = view(state);
         const [tagName, ...rest] = args;
         const el = document.createElement(tagName);
 
@@ -22,7 +23,7 @@
           const text = document.createTextNode(child);
           el.appendChild(text);
         } else if (Array.isArray(child)) {
-          child.forEach((child) => app({ node: el, args: child }));
+          child.forEach((child) => app({ node: el, state, view: () => child }));
         }
 
         Object.entries(attr || []).forEach(([key, value]) => {
@@ -34,15 +35,24 @@
       }
 
       const node = document.getElementById("app");
+
+      const state = {
+        title: "Hello World!",
+        subtitle: "I like cute cats.",
+        catUrl: "https://placekitten.com/408/287",
+        catAlt: "Cute kitten",
+      };
+
       app({
         node,
-        args: [
+        state,
+        view: (state) => [
           "div",
           {},
           [
-            ["h1", {}, "Hello World!"],
-            ["h2", { class: "italic" }, "I like cute cats."],
-            ["img", { src: "https://placekitten.com/408/287", alt: "Cute kitten", border: "3px solid" }],
+            ["h1", {}, state.title],
+            ["h2", { class: "italic" }, state.subtitle],
+            ["img", { src: state.catUrl, alt: state.catAlt, border: "3px solid" }],
           ],
         ],
       });
