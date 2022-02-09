@@ -59,7 +59,6 @@
           {
             onclick: () => {
               state.count += 1;
-              console.log(state);
             },
           },
           "Click me",
@@ -70,6 +69,15 @@
         node,
         state,
         view: (state) => ["div", [...Headings(state), ...Counter(state)]],
+      });
+
+      window.addEventListener("click", (event) => {
+        node.innerHTML = "";
+        app({
+          node,
+          state,
+          view: (state) => ["div", [...Headings(state), ...Counter(state)]],
+        });
       });
     </script>
   </body>
